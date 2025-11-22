@@ -28,7 +28,9 @@ async function run() {
     const ramadanScheduleCollection = client
       .db("masjidCare")
       .collection("ramadanSchedule");
+    const contactCollection = client.db("masjidCare").collection("contact");
 
+    //
     app.get("/posts", async (req, res) => {
       try {
         const result = await postsCollection.find().toArray();
@@ -77,6 +79,19 @@ async function run() {
       const result = await ramadanScheduleCollection.deleteOne({
         _id: new ObjectId(id),
       });
+      res.send(result);
+    });
+
+    // contactCollection ⬇
+
+    app.get("/contact", async (req, res) => {
+      const result = await contactCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/contact", async (req, res) => {
+      const contact = req.body;
+      const result = await contactCollection.insertOne(contact);
       res.send(result);
     });
 
