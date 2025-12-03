@@ -22,13 +22,14 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const postsCollection = client.db("masjidCare").collection("posts");
     const ramadanScheduleCollection = client
       .db("masjidCare")
       .collection("ramadanSchedule");
     const contactCollection = client.db("masjidCare").collection("contact");
+    const usersCollection = client.db("masjidCare").collection("users");
 
     //
     app.get("/posts", async (req, res) => {
@@ -91,6 +92,7 @@ async function run() {
 
     app.get("/contact/:id", async (req, res) => {
       const id = req.params.id;
+
       const result = await contactCollection.findOne({
         _id: new ObjectId(id),
       });
@@ -127,6 +129,17 @@ async function run() {
       });
       res.send(result);
     });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+    // ////
 
     app.use((req, res, next) => {
       console.log(req.method, req.url);
