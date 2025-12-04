@@ -133,12 +133,17 @@ async function run() {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
-
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await usersCollection.findOne({ _id: new ObjectId(id) });
+      res.send(result);
+    });
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+
     app.delete("/users/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
