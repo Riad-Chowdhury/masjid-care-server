@@ -129,14 +129,20 @@ async function run() {
       });
       res.send(result);
     });
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
 
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
-    app.get("/users", async (req, res) => {
-      const result = await usersCollection.find().toArray();
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
       res.send(result);
     });
     // ////
