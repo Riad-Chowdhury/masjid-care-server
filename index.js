@@ -153,7 +153,7 @@ async function run() {
     });
     // ////
     //  monthly fee payment api
-    app.post("/create-checkout-session", async (req, res) => {
+    app.post("/create-payment-intent", async (req, res) => {
       const { amount } = req.body;
 
       const paymentIntent = await stripe.paymentIntents.create({
