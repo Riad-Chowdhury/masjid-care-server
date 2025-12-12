@@ -1,9 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-
 require("dotenv").config();
-const stripe = require("stripe")(process.env.PAYMENT_SUCCESS_URL);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const port = process.env.PORT || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -155,27 +154,15 @@ async function run() {
     // ////
     //  monthly fee payment api
     app.post("/create-checkout-session", async (req, res) => {
-      const amount = req.body.amount;
+      const { amount } = req.body;
 
-      const session = await stripe.checkout.sessions.create({
-        ui_mode: "custom",
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: "Your Product",
-              },
-              unit_amount: amount,
-            },
-            quantity: 1,
-          },
-        ],
-        mode: "payment",
-        return_url: `${YOUR_DOMAIN}/complete?session_id={CHECKOUT_SESSION_ID}`,
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
       });
 
-      res.send({ clientSecret: session.client_secret });
+      res.json({ clientSecret: paymentIntent.client_secret });
     });
 
     app.use((req, res, next) => {
