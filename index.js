@@ -166,7 +166,7 @@ async function run() {
               product_data: {
                 name: "Your Product",
               },
-              unit_amount: amount, // $20.00
+              unit_amount: amount,
             },
             quantity: 1,
           },
