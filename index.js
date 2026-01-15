@@ -31,7 +31,9 @@ async function run() {
       .collection("ramadanSchedule");
     const contactCollection = client.db("masjidCare").collection("contact");
     const usersCollection = client.db("masjidCare").collection("users");
-
+    const paymentHistoryCollection = client
+      .db("masjidCare")
+      .collection("payment-history");
     //
     app.get("/posts", async (req, res) => {
       try {
@@ -164,6 +166,52 @@ async function run() {
 
       res.json({ clientSecret: paymentIntent.client_secret });
     });
+    // payment history api ↓
+    app.post("/payment-history", async (req, res) => {
+      try {
+        const { userId, name, amount, number, transactionId, paymentMethod } =
+          req.body;
+
+        const payment = {
+          userId,
+          name,
+          amount,
+          month,
+          number,
+          transactionId,
+          paymentMethod,
+          createdAt: new Date(),
+        };
+
+        const result = await paymentHistoryCollection.insertOne(payment);
+
+        res.send({
+          success: true,
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: "Failed to save payment history",
+        });
+      }
+    });
+
+    app.get("/payment-history/:id", async (req, res) => {
+      try {
+        const userId = req.params.id;
+        const result = await paymentHistoryCollection
+          .find({ userId })
+          .sort({ createdAt: -1 })
+          .toArray();
+
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to get payment history" });
+      }
+    });
+
+    ///////////
 
     app.use((req, res, next) => {
       console.log(req.method, req.url);
