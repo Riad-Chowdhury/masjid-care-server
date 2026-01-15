@@ -176,7 +176,6 @@ async function run() {
           userId,
           name,
           amount,
-          month,
           number,
           transactionId,
           paymentMethod,
